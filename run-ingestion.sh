@@ -1,28 +1,27 @@
 #!/bin/bash
 set -e
-
 echo "=============================================="
 echo "DataSync Ingestion - Running Solution"
 echo "=============================================="
 
-# Start the ingestion services
 echo "Starting services..."
-docker compose up -d --build
+docker compose down -v
+docker compose build --no-cache
+docker compose up -d
 
 echo ""
 echo "Waiting for services to initialize..."
 sleep 10
 
-# Monitor progress
 echo ""
 echo "Monitoring ingestion progress..."
 echo "(Press Ctrl+C to stop monitoring)"
 echo "=============================================="
 
 while true; do
-    COUNT=$(docker exec assignment-postgres psql -U postgres -d ingestion -t -c "SELECT COUNT(*) FROM ingested_events;" 2>/dev/null | tr -d ' ' || echo "0")
+    COUNT=$(docker exec datasync-ts-postgres-1 psql -U postgres -d events -t -c "SELECT COUNT(*) FROM events;" 2>/dev/null | tr -d ' ' || echo "0")
 
-    if docker logs assignment-ingestion 2>&1 | grep -q "ingestion complete" 2>/dev/null; then
+    if docker logs datasync-ts-ingestor-1 2>&1 | grep -q "DONE" 2>/dev/null; then
         echo ""
         echo "=============================================="
         echo "INGESTION COMPLETE!"
