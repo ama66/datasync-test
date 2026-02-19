@@ -1,7 +1,3 @@
-# This is your workspace for the assignment.
-# PostgreSQL is provided for your solution.
-# Add your services as needed.
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -9,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ingestion
+      POSTGRES_DB: events
     ports:
       - "5434:5432"
     volumes:
@@ -22,22 +18,16 @@ services:
     networks:
       - assignment-network
 
-  # Add your ingestion service(s) here
-  # Example:
-  #
-  # ingestion:
-  #   build: ./packages/ingestion
-  #   container_name: assignment-ingestion
-  #   environment:
-  #     DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ingestion
-  #     API_BASE_URL: https://datasync-api.example.com
-  #     TARGET_API_KEY: your_api_key_here
-  #     # Note: Use header-based auth (X-API-Key header) for best rate limits
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   networks:
-  #     - assignment-network
+  ingestion:
+    build: ./packages/ingestor
+    container_name: assignment-ingestion
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - assignment-network
 
 volumes:
   assignment_postgres_data:
