@@ -10,3 +10,4 @@ node_modules/
 # TypeScript compiled output
 dist/
 
+event_ids.txt
