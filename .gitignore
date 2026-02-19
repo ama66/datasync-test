@@ -1,1 +1,12 @@
+# Mac system files
 .DS_Store
+
+# Environment variables - never commit these
+.env
+
+# Node modules - too large to commit
+node_modules/
+
+# TypeScript compiled output
+dist/
+
